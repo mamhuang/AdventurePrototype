@@ -8,7 +8,10 @@ class AdventureScene extends Phaser.Scene {
         super(key);
         this.name = name;
     }
-
+    preload() {
+        this.load.audio('ding', 'ding.wav');
+        this.load.audio('buzz', 'buzzer.wav');
+    }
     create() {
         this.transitionDuration = 1000;
 
@@ -52,7 +55,15 @@ class AdventureScene extends Phaser.Scene {
         this.onEnter();
 
     }
-
+    playPickedSound(){
+        let ding = this.sound.add('ding');
+        ding.play();
+            
+    }
+    playBadSound(){
+        let buzz = this.sound.add('buzz');
+        buzz.play();
+    }
     showMessage(message) {
         this.messageBox.setText(message);
         this.tweens.add({

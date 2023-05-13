@@ -2,30 +2,28 @@ class Demo1 extends AdventureScene {
     constructor() {
         super("demo1", "First Room");
     }
-
+    preload(){
+        this.load.image('safe', 'safe.png');
+        this.load.audio('buzz', 'buzzer.wav');
+        this.load.audio('ding', 'ding.wav');
+    }
     onEnter() {
-
-        let clip = this.add.text(this.w * 0.3, this.w * 0.3, "📎 paperclip")
-            .setFontSize(this.s * 2)
+        let buzz = this.sound.add('buzz');
+        let door = this.add.text(100, 100, "🚪")
+            .setFontSize(this.s * 10)
             .setInteractive()
-            .on('pointerover', () => this.showMessage("Metal, bent."))
+            .on('pointerover', () => this.showMessage("A door beckons you"))
             .on('pointerdown', () => {
-                this.showMessage("No touching!");
-                this.tweens.add({
-                    targets: clip,
-                    x: '+=' + this.s,
-                    repeat: 2,
-                    yoyo: true,
-                    ease: 'Sine.inOut',
-                    duration: 100
-                });
+                this.showMessage("Enter");
+
+                this.gotoScene('demo2');
             });
 
-        let key = this.add.text(this.w * 0.5, this.w * 0.1, "🔑 key")
+        let key = this.add.text(this.w * 0.5, this.w * 0.1, "🔑 ")
             .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerover', () => {
-                this.showMessage("It's a nice key.")
+                this.showMessage("An old key")
             })
             .on('pointerdown', () => {
                 this.showMessage("You pick up the key.");
@@ -37,58 +35,174 @@ class Demo1 extends AdventureScene {
                     duration: 500,
                     onComplete: () => key.destroy()
                 });
+                this.playPickedSound();
             })
-
-        let door = this.add.text(this.w * 0.1, this.w * 0.15, "🚪 locked door")
-            .setFontSize(this.s * 2)
+        
+        
+        let safe = this.add.sprite(200, 500, "safe")
             .setInteractive()
-            .on('pointerover', () => {
-                if (this.hasItem("key")) {
-                    this.showMessage("You've got the key for this door.");
-                } else {
-                    this.showMessage("It's locked. Can you find a key?");
-                }
+            .on('pointerover', ()=> {
+                this.showMessage("A safe, it seems locked tight.")
             })
             .on('pointerdown', () => {
-                if (this.hasItem("key")) {
-                    this.loseItem("key");
-                    this.showMessage("*squeak*");
-                    door.setText("🚪 unlocked door");
-                    this.gotoScene('demo2');
+                 if (this.hasItem("First half of code") && this.hasItem("Second half of code")) {
+                    this.showMessage("You open the safe and pick up a keycard");
+                    this.gainItem("keycard");
+                    this.playPickedSound();
                 }
+                else{
+                    this.showMessage("It's locked tight.")
+                    this.playBadSound()
+                }
+                this.tweens.add({
+                    targets: safe,
+                    x: '+=' + this.s,
+                    repeat: 2,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+               
             })
+
+        safe.setScale(.2);
+
+      
 
     }
 }
 
 class Demo2 extends AdventureScene {
     constructor() {
-        super("demo2", "The second room has a long name (it truly does).");
+        super("demo2", "Inside the mansion");
     }
     onEnter() {
-        this.add.text(this.w * 0.3, this.w * 0.4, "just go back")
+
+        let door1 = this.add.text(100, 100, "🚪")
+            .setFontSize(this.s * 10)
+            .setInteractive()
+            .on('pointerover', () => this.showMessage("A locked door, it seems to lead outside."))
+            .on('pointerdown', () => {
+                if(this.hasItem("key")){
+                    this.showMessage("Go outside.");
+                    this.gotoScene('demo3');
+                }
+                else{
+                    this.showMessage("The door is locked.");
+                    this.playBadSound();
+                }
+                
+
+                
+            });
+            let door2 = this.add.text(500, 100, "🚪")
+            .setFontSize(this.s * 10)
+            .setInteractive()
+            .on('pointerover', () => this.showMessage("A locked door, this one seems to have a card reader on it."))
+            .on('pointerdown', () => {
+                if(this.hasItem("keycard")){
+                    this.showMessage("Go through the door");
+                    this.gotoScene('demo5');
+                }
+                else{
+                    this.showMessage("The door is locked.");
+                    this.playBadSound();
+                }
+                
+
+                
+            });
+            let door3 = this.add.text(900, 100, "🚪")
+            .setFontSize(this.s * 10)
+            .setInteractive()
+            .on('pointerover', () => this.showMessage("A door leading further into the mansion"))
+            .on('pointerdown', () => {
+                this.showMessage("Enter");
+                this.gotoScene('demo4');
+                
+
+                
+            });
+
+        this.add.text(this.w * 0.3, this.w * 0.4, "Go back")
             .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerover', () => {
-                this.showMessage("You've got no other choice, really.");
+                this.showMessage("Go back outside");
             })
             .on('pointerdown', () => {
                 this.gotoScene('demo1');
             });
 
-        let finish = this.add.text(this.w * 0.6, this.w * 0.2, '(finish the game)')
+        
+    }
+}
+
+class Demo3 extends AdventureScene {
+    constructor() {
+        super("demo3", "A dark mausoleum");
+    }
+    onEnter(){
+        let coffin1 = this.add.text(400, 100, "⚰️")
+            .setFontSize(this.s * 10)
+            .setInteractive()
+            .on('pointerover', () => this.showMessage("A coffin that has been half opened"))
+            .on('pointerdown', () => {
+                this.showMessage("You see a faint series of numbers that could be a code");
+                this.gainItem("First half of code");
+                this.playPickedSound();
+                this.tweens.add({
+                    targets: safe,
+                    x: '+=' + this.s,
+                    repeat: 2,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+                
+
+                
+        });
+
+        let coffin2 = this.add.text(800, 100, "⚰️")
+            .setFontSize(this.s * 10)
+            .setInteractive()
+            .on('pointerover', () => this.showMessage("A closed coffin "))
+            .on('pointerdown', () => {
+                this.showMessage("You try to open it but it is sealed shut");
+            
+                this.playBadSound();
+                this.tweens.add({
+                    targets: coffin2,
+                    x: '+=' + this.s,
+                    repeat: 2,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });
+                
+
+                
+        });
+
+        this.add.text(this.w * 0.3, this.w * 0.4, "Go back")
+            .setFontSize(this.s * 2)
             .setInteractive()
             .on('pointerover', () => {
-                this.showMessage('*giggles*');
-                this.tweens.add({
-                    targets: finish,
-                    x: this.s + (this.h - 2 * this.s) * Math.random(),
-                    y: this.s + (this.h - 2 * this.s) * Math.random(),
-                    ease: 'Sine.inOut',
-                    duration: 500
-                });
+                this.showMessage("Go back inside");
             })
-            .on('pointerdown', () => this.gotoScene('outro'));
+            .on('pointerdown', () => {
+                this.gotoScene('demo2');
+            });
+    }   
+}
+
+class Demo4 extends AdventureScene {
+    constructor() {
+        super('demo4', 'An Old Office Room')
+    }
+    onEnter(){
+        
     }
 }
 
@@ -125,7 +239,8 @@ const game = new Phaser.Game({
         width: 1920,
         height: 1080
     },
-    scene: [Intro, Demo1, Demo2, Outro],
+    scene: [Intro, Demo1, Demo2, Demo3, Outro],
     title: "Adventure Game",
+    audio: {disableWebAudio: true}
 });
 
