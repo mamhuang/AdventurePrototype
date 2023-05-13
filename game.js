@@ -1,6 +1,6 @@
-class Demo1 extends AdventureScene {
+class MansionExterior extends AdventureScene {
     constructor() {
-        super("demo1", "Outside the mansion");
+        super("MansionExterior", "Outside the mansion");
     }
     preload(){
         this.load.image('safe', 'safe.png');
@@ -16,7 +16,7 @@ class Demo1 extends AdventureScene {
             .on('pointerdown', () => {
                 this.showMessage("Enter");
 
-                this.gotoScene('demo2');
+                this.gotoScene('MansionInterior');
             });
 
         let key = this.add.text(this.w * 0.5, this.w * 0.1, "🔑 ")
@@ -53,15 +53,16 @@ class Demo1 extends AdventureScene {
                 else{
                     this.showMessage("It's locked tight.")
                     this.playBadSound()
+                    this.tweens.add({
+                        targets: safe,
+                        x: '+=' + this.s,
+                        repeat: 2,
+                        yoyo: true,
+                        ease: 'Sine.inOut',
+                        duration: 100
+                    });
                 }
-                this.tweens.add({
-                    targets: safe,
-                    x: '+=' + this.s,
-                    repeat: 2,
-                    yoyo: true,
-                    ease: 'Sine.inOut',
-                    duration: 100
-                });
+                
                
             })
 
@@ -72,9 +73,9 @@ class Demo1 extends AdventureScene {
     }
 }
 
-class Demo2 extends AdventureScene {
+class MansionInterior extends AdventureScene {
     constructor() {
-        super("demo2", "Inside the mansion");
+        super("MansionInterior", "Inside the mansion");
     }
     onEnter() {
 
@@ -85,7 +86,7 @@ class Demo2 extends AdventureScene {
             .on('pointerdown', () => {
                 if(this.hasItem("key")){
                     this.showMessage("Go outside.");
-                    this.gotoScene('demo3');
+                    this.gotoScene('Mausoleum');
                 }
                 else{
                     this.showMessage("The door is locked.");
@@ -102,7 +103,7 @@ class Demo2 extends AdventureScene {
             .on('pointerdown', () => {
                 if(this.hasItem("keycard")){
                     this.showMessage("Go through the door");
-                    this.gotoScene('outro');
+                    this.gotoScene('HiddenRoom');
                 }
                 else{
                     this.showMessage("The door is locked.");
@@ -118,7 +119,7 @@ class Demo2 extends AdventureScene {
             .on('pointerover', () => this.showMessage("A door leading further into the mansion"))
             .on('pointerdown', () => {
                 this.showMessage("Enter");
-                this.gotoScene('demo4');
+                this.gotoScene('Office');
                 
 
                 
@@ -131,14 +132,14 @@ class Demo2 extends AdventureScene {
                 this.showMessage("Go back outside");
             })
             .on('pointerdown', () => {
-                this.gotoScene('demo1');
+                this.gotoScene('MansionExterior');
             });
 
         
     }
 }
 
-class Demo3 extends AdventureScene {
+class Mausoleum extends AdventureScene {
     constructor() {
         super("demo3", "A dark mausoleum");
     }
@@ -192,14 +193,14 @@ class Demo3 extends AdventureScene {
                 this.showMessage("Go back inside");
             })
             .on('pointerdown', () => {
-                this.gotoScene('demo2');
+                this.gotoScene('MansionInterior');
             });
     }   
 }
 
-class Demo4 extends AdventureScene {
+class Office extends AdventureScene {
     constructor() {
-        super('demo4', 'An Old Office Room')
+        super('Office', 'An Old Office Room')
     }
     onEnter(){
         let books = this.add.text(200, 100, "📚")
@@ -238,7 +239,7 @@ class Demo4 extends AdventureScene {
                 this.showMessage("Go back");
             })
             .on('pointerdown', () => {
-                this.gotoScene('demo2');
+                this.gotoScene('MansionInterior');
             });
     
             
@@ -259,14 +260,14 @@ class Intro extends Phaser.Scene {
         this.add.sprite(700, 550, 'mansion');
         this.input.on('pointerdown', () => {
             this.cameras.main.fade(1000, 0,0,0);
-            this.time.delayedCall(1000, () => this.scene.start('demo1'));
+            this.time.delayedCall(1000, () => this.scene.start('MansionExterior'));
         });
     }
 }
 
-class Outro extends Phaser.Scene {
+class HiddenRoom extends Phaser.Scene {
     constructor() {
-        super('outro');
+        super('HiddenRoom');
     }
     preload(){
         this.load.image('portal', 'portal.png');
@@ -287,7 +288,7 @@ const game = new Phaser.Game({
         width: 1920,
         height: 1080
     },
-    scene: [Intro, Demo1, Demo2, Demo3, Demo4, Outro],
+    scene: [Intro, MansionExterior, MansionInterior, Mausoleum, Office, HiddenRoom],
     title: "Adventure Game",
     audio: {disableWebAudio: true}
 });
