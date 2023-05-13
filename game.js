@@ -202,7 +202,46 @@ class Demo4 extends AdventureScene {
         super('demo4', 'An Old Office Room')
     }
     onEnter(){
-        
+        let books = this.add.text(200, 100, "📚")
+            .setFontSize(this.s*2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("A pile of books")
+            })
+            .on('pointerdown', () => {
+                this.showMessage("You skim through it but find nothing ");            
+                this.tweens.add({
+                    targets: books,
+                    x: '+=' + this.s,
+                    repeat: 2,
+                    yoyo: true,
+                    ease: 'Sine.inOut',
+                    duration: 100
+                });         
+        })
+        let computer = this.add.text(200, 100, "🖥️")
+            .setFontSize(this.s*2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("An old computer")
+            })
+            .on('pointerdown', () => {
+                this.showMessage("Surprisingly it works and you find a series of numbers on it!");   
+                this.gainItem("Second half of code");
+                this.playPickedSound();         
+                      
+        })
+        this.add.text(this.w * 0.3, this.w * 0.4, "Go back")
+            .setFontSize(this.s * 2)
+            .setInteractive()
+            .on('pointerover', () => {
+                this.showMessage("Go back");
+            })
+            .on('pointerdown', () => {
+                this.gotoScene('demo2');
+            });
+    
+            
     }
 }
 
